@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>XoPhim - Phim hay cả rổ</title>
+    <title>Xô Phim - Phim hay cả Xổ - của Đức nhé !</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-database-compat.js"></script>
@@ -30,6 +30,11 @@
             background-color: var(--bg-body);
             color: var(--text-main);
             overflow-x: hidden;
+            /* Chống bôi đen văn bản để bảo vệ nội dung */
+            -webkit-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
+            user-select: none;
         }
 
         /* --- HEADER DESKTOP --- */
@@ -631,6 +636,10 @@
             display: none;
         }
 
+        .interest-grid {
+            scrollbar-width: none;
+        }
+
         .interest-card {
             min-width: 160px;
             height: 100px;
@@ -795,6 +804,10 @@
             display: none;
         }
 
+        .movie-scroll-top10 {
+            scrollbar-width: none;
+        }
+
         .movie-item-top10 {
             position: relative;
             min-width: 160px;
@@ -868,6 +881,100 @@
             color: var(--accent);
             font-weight: bold;
         }
+
+        /* --- PHẦN TOP 10 BOM TẤN (SỐ ĐÃ CHỈNH BÉ LẠI) --- */
+        .movie-scroll-bomtan {
+            display: flex;
+            overflow-x: auto;
+            gap: 25px;
+            padding: 20px 10px 40px 15px;
+            scroll-snap-type: x mandatory;
+            scroll-behavior: smooth;
+        }
+        .movie-scroll-bomtan::-webkit-scrollbar { display: none; }
+        
+        .bomtan-item {
+            min-width: 180px;
+            scroll-snap-align: start;
+            cursor: pointer;
+            position: relative;
+            transition: var(--transition);
+        }
+        .bomtan-item:hover { transform: translateY(-10px); }
+        
+        .bomtan-rank {
+            position: absolute;
+            bottom: -5px;
+            left: -10px;
+            font-size: 40px; 
+            font-weight: 900;
+            color: var(--bg-body);
+            line-height: 1;
+            z-index: 10;
+            font-style: italic;
+            -webkit-text-stroke: 1.5px var(--accent);
+            text-shadow: 3px 3px 6px rgba(0,0,0,0.8);
+        }
+        
+        .bomtan-thumb {
+            width: 100%;
+            aspect-ratio: 2/3;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.6);
+            position: relative;
+            z-index: 5;
+            border: 1px solid rgba(255,255,255,0.05);
+        }
+        .bomtan-thumb img { width: 100%; height: 100%; object-fit: cover; }
+        
+        .bomtan-meta { margin-top: 12px; padding-left: 15px; }
+        .bomtan-title { font-weight: bold; font-size: 14px; color: #fff; margin-bottom: 5px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+        .bomtan-info { font-size: 11px; color: var(--accent); font-weight: bold; }
+
+        /* --- PHẦN TOP 10 PHIM LẺ (SỐ THỨ TỰ NẰM DƯỚI) --- */
+        .movie-scroll-top10le {
+            display: flex;
+            overflow-x: auto;
+            gap: 20px;
+            padding: 20px 0 40px 0;
+            scroll-snap-type: x mandatory;
+            scroll-behavior: smooth;
+        }
+        .movie-scroll-top10le::-webkit-scrollbar { display: none; }
+        .top10le-item {
+            min-width: 200px;
+            scroll-snap-align: start;
+            cursor: pointer;
+            position: relative;
+            transition: var(--transition);
+        }
+        .top10le-item:hover { transform: translateY(-5px); }
+        .top10le-thumb {
+            width: 100%;
+            aspect-ratio: 2/3;
+            border-radius: 12px;
+            overflow: hidden;
+            border: 1px solid rgba(255,255,255,0.05);
+        }
+        .top10le-thumb img { width: 100%; height: 100%; object-fit: cover; }
+        .top10le-info {
+            margin-top: 15px;
+            display: flex;
+            align-items: flex-start;
+            gap: 15px;
+        }
+        .top10le-rank {
+            font-size: 40px;
+            font-weight: 900;
+            color: var(--accent);
+            line-height: 1;
+            font-style: italic;
+        }
+        .top10le-detail { flex: 1; }
+        .top10le-title { font-weight: bold; font-size: 14px; color: #fff; margin-bottom: 3px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+        .top10le-sub { font-size: 11px; color: var(--text-dim); margin-bottom: 3px; }
+        .top10le-meta { font-size: 11px; color: #888; }
 
         .popup-overlay {
             position: fixed;
@@ -1182,6 +1289,7 @@
             .movie-item-top10 { min-width: 130px; }
             .top10-label { font-size: 10px; padding: 2px 6px; }
             .party-content { grid-template-columns: 1fr; }
+            .bomtan-rank { font-size: 30px; left: -5px; bottom: -5px; }
         }
 
         footer {
@@ -1370,14 +1478,14 @@
     </section>
 
     <section class="movie-list-section">
-        <div class="list-header"><h3>Phim Hàn Quốc mới cho mấy người mê hàn xẻng nè</h3></div>
+        <div class="list-header"><h3>Phim Hàn Quốc mới - Của Mấy má mê trai nè!</h3></div>
         <div class="slide-btn btn-left" onclick="slideMovies('koreanList', -1)"><i class="fas fa-chevron-left"></i></div>
         <div class="slide-btn btn-right" onclick="slideMovies('koreanList', 1)"><i class="fas fa-chevron-right"></i></div>
         <div class="movie-scroll" id="koreanList"></div>
     </section>
 
     <section class="movie-list-section">
-        <div class="list-header"><h3>Phim Trung Quốc mới nè má ơi</h3></div>
+        <div class="list-header"><h3>Phim Trung Quốc - Tổng tài của mấy má nè! </h3></div>
         <div class="slide-btn btn-left" onclick="slideMovies('chineseList', -1)"><i class="fas fa-chevron-left"></i></div>
         <div class="slide-btn btn-right" onclick="slideMovies('chineseList', 1)"><i class="fas fa-chevron-right"></i></div>
         <div class="movie-scroll" id="chineseList"></div>
@@ -1385,32 +1493,25 @@
 
     <section class="movie-list-section">
         <div class="list-header">
-            <h3>Phim Thái Lan Mới</h3>
+            <h3>Phim Thái Lan Mới - Đây chắc chắn là của chị phiến nha!</h3>
             <a href="#" onclick="loadCountryPhim('thai-lan', 'searchList', 'Thái Lan')" style="margin-left: 15px; font-size: 14px; text-decoration: none; color: #ccc;">
                 Xem toàn bộ <i class="fas fa-chevron-right"></i>
             </a>
         </div>
-        
-        <div class="slide-btn btn-left" onclick="slideMovies('thaiMoviesList', -1)">
-            <i class="fas fa-chevron-left"></i>
-        </div>
-        
-        <div class="slide-btn btn-right" onclick="slideMovies('thaiMoviesList', 1)">
-            <i class="fas fa-chevron-right"></i>
-        </div>
-        
+        <div class="slide-btn btn-left" onclick="slideMovies('thaiMoviesList', -1)"><i class="fas fa-chevron-left"></i></div>
+        <div class="slide-btn btn-right" onclick="slideMovies('thaiMoviesList', 1)"><i class="fas fa-chevron-right"></i></div>
         <div class="movie-scroll" id="thaiMoviesList"></div>
     </section>
 
     <section class="movie-list-section">
-        <div class="list-header"><h3>Phim US-UK, của mấy thằng tây lông nè </h3></div>
+        <div class="list-header"><h3>Phim US-UK, Mấy thằng tây nè! </h3></div>
         <div class="slide-btn btn-left" onclick="slideMovies('usukList', -1)"><i class="fas fa-chevron-left"></i></div>
         <div class="slide-btn btn-right" onclick="slideMovies('usukList', 1)"><i class="fas fa-chevron-right"></i></div>
         <div class="movie-scroll" id="usukList"></div>
     </section>
 
     <section class="movie-list-section">
-        <div class="list-header"><h3>Phim Điện Ảnh Mới Coóng, Cóng người nha </h3></div>
+        <div class="list-header"><h3>Phim Điện Ảnh Mới Coóng, Cứng Người Luôn! </h3></div>
         <div class="slide-btn btn-left" onclick="slideMovies('cinemaList', -1)"><i class="fas fa-chevron-left"></i></div>
         <div class="slide-btn btn-right" onclick="slideMovies('cinemaList', 1)"><i class="fas fa-chevron-right"></i></div>
         <div class="movie-scroll" id="cinemaList"></div>
@@ -1424,21 +1525,35 @@
     </section>
 
     <section class="movie-list-section">
-        <div class="list-header"><h3>Tôi Sợ Con Người Em Rồi Đó, nhưng Không Bằng Sợ Ma</h3></div>
+        <div class="list-header"><h3>Tôi Sợ Con Người Em Rồi Đó, Nhưng Không Bằng Sợ Ma!</h3></div>
         <div class="slide-btn btn-left" onclick="slideMovies('horrorList', -1)"><i class="fas fa-chevron-left"></i></div>
         <div class="slide-btn btn-right" onclick="slideMovies('horrorList', 1)"><i class="fas fa-chevron-right"></i></div>
         <div class="movie-scroll" id="horrorList"></div>
     </section>
 
     <section class="movie-list-section">
-        <div class="list-header"><h3>Top 10 Phim Bộ Hôm Nap</h3></div>
+        <div class="list-header"><h3>Top 10 Phim Bộ Hôm Nay Nhé Bồ!</h3></div>
         <div class="slide-btn btn-left" onclick="slideMovies('top10List', -1)"><i class="fas fa-chevron-left"></i></div>
         <div class="slide-btn btn-right" onclick="slideMovies('top10List', 1)"><i class="fas fa-chevron-right"></i></div>
         <div class="movie-scroll-top10" id="top10List"></div>
     </section>
 
+    <section class="movie-list-section">
+        <div class="list-header"><h3>Top Phim Bom Tấn Hay Nhức Nách luôn nè! </h3></div>
+        <div class="slide-btn btn-left" onclick="slideMovies('bomTanList', -1)"><i class="fas fa-chevron-left"></i></div>
+        <div class="slide-btn btn-right" onclick="slideMovies('bomTanList', 1)"><i class="fas fa-chevron-right"></i></div>
+        <div class="movie-scroll-bomtan" id="bomTanList"></div>
+    </section>
+
+    <section class="movie-list-section">
+        <div class="list-header"><h3>Top 10 Phim Lẻ Hay Nhức Nách (Mới nhất đang cập nhật lại nheng)</h3></div>
+        <div class="slide-btn btn-left" onclick="slideMovies('top10LeList', -1)"><i class="fas fa-chevron-left"></i></div>
+        <div class="slide-btn btn-right" onclick="slideMovies('top10LeList', 1)"><i class="fas fa-chevron-right"></i></div>
+        <div class="movie-scroll-top10le" id="top10LeList"></div>
+    </section>
+
     <section class="featured-banner">
-        <h2>Top Phim Đề Cử</h2>
+        <h2>Top Phim Đề Cử - Coi đi hay lắm - mà tìm kiếm nha này tui gợi ý thôi </h2>
         <div class="banner-card" id="nominationBanner">
             <img src="" class="banner-img-bg" id="nomImg">
             <div class="banner-overlay"></div>
@@ -1461,10 +1576,10 @@
 
 <footer>
     <div class="footer-content">
-        <h2>XoPhim</h2>
-        <p>Trải nghiệm xem phim online chất lượng cao, cập nhật liên tục các bộ phim mới nhất. XoPhim - Phim hay cả rổ, xem là mê!</p>
+        <h2>Xô Phim</h2>
+        <p>Xô Phim - Trang xem phim online chất lượng cao miễn phí Vietsub, thuyết minh, lồng tiếng full HD. Kho phim mới khổng lồ, phim chiếu rạp, phim bộ, phim lẻ từ nhiều quốc gia như Việt Nam, Hàn Quốc, Trung Quốc, Thái Lan, Nhật Bản, Âu Mỹ… đa dạng thể loại. Khám phá nền tảng phim trực tuyến hay nhất 2026 chất lượng 4K!</p>
         <div style="color: var(--text-dim); font-size: 15px;">
-            &copy; 2026 XoPhim. Này là thằng Đức con nhà ông Cừ Bà Hà làm nha.
+            &copy; 2026 XoPhim. Tui Là Đức Anh đẹp trai nhất làng!.
         </div>
     </div>
 </footer>
@@ -1546,10 +1661,96 @@
     let currentUser = JSON.parse(localStorage.getItem('xoPhim_User')) || null;
     let currentRoomID = null;
 
-    function slideMovies(id, direction) {
+    // TRACKING TRANG ĐỂ LOAD VÔ TẬN
+    let pageTracking = {
+        'searchList': 1,
+        'koreanList': 1,
+        'chineseList': 1,
+        'thaiMoviesList': 1,
+        'usukList': 1,
+        'cinemaList': 1,
+        'hkList': 1,
+        'horrorList': 1,
+        'bomTanList': 1,
+        'top10LeList': 1
+    };
+
+    async function slideMovies(id, direction) {
         const container = document.getElementById(id);
         const scrollAmount = container.offsetWidth * 0.8;
         container.scrollBy({ left: direction * scrollAmount, behavior: 'smooth' });
+
+        // NẾU KÉO SANG PHẢI VÀ GẦN HẾT PHIM TRONG LIST THÌ LOAD THÊM TỪ API
+        if (direction === 1 && (container.scrollLeft + container.offsetWidth >= container.scrollWidth - 300)) {
+            pageTracking[id]++;
+            
+            let endpoint = '';
+            if(id === 'koreanList') endpoint = 'quoc-gia/han-quoc';
+            else if(id === 'chineseList') endpoint = 'quoc-gia/trung-quoc';
+            else if(id === 'thaiMoviesList') endpoint = 'quoc-gia/thai-lan';
+            else if(id === 'usukList') endpoint = 'quoc-gia/au-my';
+            else if(id === 'cinemaList') endpoint = 'danh-sach/phim-le';
+            else if(id === 'hkList') endpoint = 'quoc-gia/hong-kong';
+            else if(id === 'horrorList') endpoint = 'the-loai/kinh-di';
+            else if(id === 'bomTanList') endpoint = 'danh-sach/phim-le';
+            else if(id === 'top10LeList') endpoint = 'danh-sach/phim-le';
+
+            if(endpoint !== '') {
+                try {
+                    const res = await fetch(`https://phimapi.com/v1/api/${endpoint}?limit=20&page=${pageTracking[id]}`);
+                    const data = await res.json();
+                    if (data.data.items && data.data.items.length > 0) {
+                        appendMovieList(data.data.items, id, (id === 'bomTanList' || id === 'top10LeList'), id === 'top10LeList');
+                    }
+                } catch (e) { console.error("Hết phim rồi Đức ơi", e); }
+            }
+        }
+    }
+
+    function appendMovieList(items, elementId, isRanked = false, isStyleBottom = false) {
+        const container = document.getElementById(elementId);
+        const currentCount = container.children.length;
+        
+        const html = items.map((m, i) => {
+            if (isStyleBottom) {
+                return `
+                    <div class="top10le-item" onclick="showMovieDetail('${m.slug}')">
+                        <div class="top10le-thumb">
+                            <img src="${API_IMG}https://phimimg.com/${m.poster_url}" alt="${m.name}">
+                        </div>
+                        <div class="top10le-info">
+                            <div class="top10le-rank">${currentCount + i + 1}</div>
+                            <div class="top10le-detail">
+                                <div class="top10le-title">${m.name}</div>
+                                <div class="top10le-sub">${m.origin_name}</div>
+                                <div class="top10le-meta">${m.year} • HD</div>
+                            </div>
+                        </div>
+                    </div>`;
+            }
+            if (isRanked) {
+                return `
+                    <div class="bomtan-item" onclick="showMovieDetail('${m.slug}')">
+                        <div class="bomtan-rank">${currentCount + i + 1}</div>
+                        <div class="bomtan-thumb">
+                            <img src="${API_IMG}https://phimimg.com/${m.poster_url}" alt="${m.name}">
+                        </div>
+                        <div class="bomtan-meta">
+                            <div class="bomtan-title">${m.name}</div>
+                            <div class="bomtan-info">${m.year} • HD</div>
+                        </div>
+                    </div>`;
+            }
+            return `
+                <div class="movie-item" onclick="showMovieDetail('${m.slug}')">
+                    <div class="movie-thumb">
+                        <img src="${API_IMG}https://phimimg.com/${m.poster_url}" alt="${m.name}">
+                        <span class="movie-badge">${m.year || 'Hot'}</span>
+                    </div>
+                    <div class="movie-title">${m.name}</div>
+                </div>`;
+        }).join('');
+        container.insertAdjacentHTML('beforeend', html);
     }
 
     async function initSite() {
@@ -1609,10 +1810,55 @@
             loadCountryPhim('hong-kong', 'hkList');
             loadCategoryPhim('kinh-di', 'horrorList');
             loadTop10Phim();
+            loadBomTanPhim();
+            loadTop10PhimLe();
             loadNominationData(); 
             updateHeaderAuth();
 
         } catch (e) { console.error("Lỗi khởi tạo", e); }
+    }
+
+    async function loadBomTanPhim() {
+        try {
+            const res = await fetch(`https://phimapi.com/v1/api/danh-sach/phim-le?limit=10&page=1`);
+            const data = await res.json();
+            const container = document.getElementById('bomTanList');
+            container.innerHTML = data.data.items.map((m, index) => `
+                <div class="bomtan-item" onclick="showMovieDetail('${m.slug}')">
+                    <div class="bomtan-rank">${index + 1}</div>
+                    <div class="bomtan-thumb">
+                        <img src="${API_IMG}https://phimimg.com/${m.poster_url}" alt="${m.name}">
+                    </div>
+                    <div class="bomtan-meta">
+                        <div class="bomtan-title">${m.name}</div>
+                        <div class="bomtan-info">${m.year} • HD</div>
+                    </div>
+                </div>
+            `).join('');
+        } catch (e) { console.error(e); }
+    }
+
+    async function loadTop10PhimLe() {
+        try {
+            const res = await fetch(`https://phimapi.com/v1/api/danh-sach/phim-le?limit=10&page=1`);
+            const data = await res.json();
+            const container = document.getElementById('top10LeList');
+            container.innerHTML = data.data.items.map((m, index) => `
+                <div class="top10le-item" onclick="showMovieDetail('${m.slug}')">
+                    <div class="top10le-thumb">
+                        <img src="${API_IMG}https://phimimg.com/${m.poster_url}" alt="${m.name}">
+                    </div>
+                    <div class="top10le-info">
+                        <div class="top10le-rank">${index + 1}</div>
+                        <div class="top10le-detail">
+                            <div class="top10le-title">${m.name}</div>
+                            <div class="top10le-sub">${m.origin_name}</div>
+                            <div class="top10le-meta">${m.year} • HD</div>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+        } catch (e) { console.error(e); }
     }
 
     // AUTH SYSTEM
@@ -1771,17 +2017,43 @@
         document.getElementById('mobileSearch').classList.remove('active');
     }
 
-    async function handleSearch(keyword) {
+    async function handleSearch(keyword, isLoadMore = false) {
         if (!keyword) return;
-        closeAllMenus();
-        document.getElementById('section-search').style.display = 'block';
-        document.getElementById('searchTitle').innerText = `Kết quả cho: ${keyword}`;
-        document.getElementById('searchList').innerHTML = '<p style="padding:20px;">Đang tìm kiếm...</p>';
+        if (!isLoadMore) {
+            closeAllMenus();
+            pageTracking['searchList'] = 1;
+            document.getElementById('section-search').style.display = 'block';
+            document.getElementById('searchTitle').innerText = `Kết quả cho: ${keyword}`;
+            document.getElementById('searchList').innerHTML = '<p style="padding:20px;">Đang tìm kiếm...</p>';
+        } else {
+            pageTracking['searchList']++;
+        }
+
         try {
-            const res = await fetch(`https://phimapi.com/v1/api/tim-kiem?keyword=${keyword}&limit=30`);
+            const res = await fetch(`https://phimapi.com/v1/api/tim-kiem?keyword=${keyword}&limit=20&page=${pageTracking['searchList']}`);
             const data = await res.json();
-            renderMovieList(data.data.items, 'searchList');
-            window.scrollTo({ top: document.getElementById('section-search').offsetTop - 100, behavior: 'smooth' });
+            
+            if (!isLoadMore) {
+                renderMovieList(data.data.items, 'searchList');
+                window.scrollTo({ top: document.getElementById('section-search').offsetTop - 100, behavior: 'smooth' });
+            } else {
+                appendMovieList(data.data.items, 'searchList');
+            }
+
+            // THÊM NÚT XEM THÊM CHO PHẦN SEARCH
+            let btnMore = document.getElementById('btnSearchMore');
+            if(!btnMore) {
+                document.getElementById('section-search').insertAdjacentHTML('beforeend', 
+                    `<button id="btnSearchMore" onclick="handleSearch('${keyword}', true)" style="display:block; margin:20px auto; padding:10px 30px; background:var(--accent); border:none; border-radius:20px; font-weight:bold; cursor:pointer; color:#000;">XEM THÊM KẾT QUẢ</button>`
+                );
+            }
+            
+            if (data.data.items.length < 20) {
+                if(btnMore) btnMore.style.display = 'none';
+            } else if(btnMore) {
+                btnMore.style.display = 'block';
+            }
+
         } catch (e) { console.error(e); }
     }
 
@@ -1999,7 +2271,8 @@
             // Lắng nghe thay đổi thành viên
             roomRef.child('members').on('value', (s) => {
                 const m = s.val() || {};
-                document.getElementById('memberListDisplay').innerText = "Thành viên: " + Object.values(m).join(', ');
+                const display = document.getElementById('memberListDisplay');
+                if(display) display.innerText = "Thành viên: " + Object.values(m).join(', ');
             });
 
             // Lắng nghe đồng bộ video (Tập phim)
@@ -2007,7 +2280,7 @@
                 const sync = s.val();
                 if (sync && sync.user !== currentUser.name) {
                     const iframe = document.getElementById('videoIframe');
-                    if (iframe.src !== sync.link) {
+                    if (iframe && iframe.src !== sync.link) {
                         iframe.src = sync.link;
                         alert(sync.user + " vừa chuyển tập phim!");
                     }
@@ -2024,7 +2297,7 @@
 
     function sendMessage(roomID) {
         const input = document.getElementById('msgInput');
-        if (!input.value.trim() || !currentUser) return;
+        if (!input || !input.value.trim() || !currentUser) return;
         database.ref('chats/' + roomID).push({
             user: currentUser.name,
             text: input.value,
@@ -2050,9 +2323,12 @@
         document.querySelectorAll('.ep-btn').forEach(b => b.classList.remove('active'));
         btn.classList.add('active');
         const iframe = document.getElementById('videoIframe');
-        iframe.src = "about:blank"; 
-        setTimeout(() => { iframe.src = link; }, 100);
-        document.getElementById('moviePopup').scrollTo({ top: 0, behavior: 'smooth' });
+        if(iframe) {
+            iframe.src = "about:blank"; 
+            setTimeout(() => { iframe.src = link; }, 100);
+        }
+        const popup = document.getElementById('moviePopup');
+        if(popup) popup.scrollTo({ top: 0, behavior: 'smooth' });
 
         // Đồng bộ với phòng nếu đang ở trong phòng
         if (currentRoomID) {
@@ -2069,8 +2345,11 @@
         btn.classList.add('active');
         const serverData = window.currentMovieEpisodes[serverIdx].server_data;
         const newEpisodes = serverData.map((ep, idx) => `<button class="ep-btn ${idx === 0 ? 'active' : ''}" onclick="playVideo(this, '${ep.link_embed}')">${ep.name}</button>`).join('');
-        document.getElementById('epContainer').innerHTML = newEpisodes;
-        playVideo(document.querySelector('.ep-btn'), serverData[0].link_embed);
+        const epContainer = document.getElementById('epContainer');
+        if(epContainer) {
+            epContainer.innerHTML = newEpisodes;
+            playVideo(epContainer.querySelector('.ep-btn'), serverData[0].link_embed);
+        }
     };
 
     function closePopup() {
@@ -2146,6 +2425,36 @@
             document.querySelectorAll('.dropdown').forEach(d => d.classList.remove('open'));
         }
     }
+
+    // --- HỆ THỐNG BẢO MẬT CHỐNG COPPY & SOI CODE ---
+    // 1. Chặn chuột phải
+    document.addEventListener('contextmenu', function(e) {
+        e.preventDefault();
+    }, false);
+
+    // 2. Chặn các phím tắt DevTools
+    document.addEventListener('keydown', function(e) {
+        // Chặn F12
+        if (e.keyCode === 123) {
+            e.preventDefault();
+            return false;
+        }
+        // Chặn Ctrl+Shift+I, Ctrl+Shift+J, Ctrl+Shift+C (Inspect)
+        if (e.ctrlKey && e.shiftKey && (e.keyCode === 73 || e.keyCode === 74 || e.keyCode === 67)) {
+            e.preventDefault();
+            return false;
+        }
+        // Chặn Ctrl+U (View Source)
+        if (e.ctrlKey && e.keyCode === 85) {
+            e.preventDefault();
+            return false;
+        }
+        // Chặn Ctrl+S (Save page)
+        if (e.ctrlKey && e.keyCode === 83) {
+            e.preventDefault();
+            return false;
+        }
+    }, false);
 </script>
 </body>
 </html>
