@@ -1021,6 +1021,54 @@
             transform: rotate(90deg);
         }
 
+        /* --- NÂNG CẤP HEADER POPUP --- */
+        .popup-header-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+            gap: 15px;
+        }
+        .popup-title-group {
+            flex-grow: 1;
+            border-left: 5px solid var(--accent);
+            padding-left: 15px;
+        }
+        .popup-title-group h2 {
+            font-size: 20px;
+            margin: 0;
+            color: #fff;
+        }
+        .popup-title-group span {
+            font-size: 14px;
+            color: var(--accent);
+            font-weight: bold;
+        }
+        .popup-controls {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+        .btn-back-home {
+            background: rgba(255,255,255,0.1);
+            color: #fff;
+            border: 1px solid #444;
+            padding: 6px 15px;
+            border-radius: 20px;
+            cursor: pointer;
+            font-size: 12px;
+            transition: 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+        .btn-back-home:hover {
+            background: #fff;
+            color: #000;
+        }
+
         .player-wrapper {
             width: 100%;
             background: #000;
@@ -1282,6 +1330,8 @@
             .slide-content h2 { font-size: 24px; }
             .slide-desc { display: none; }
             .popup-content { margin: 0; padding: 15px; width: 100%; border-radius: 0; }
+            .popup-header-top { flex-direction: column; align-items: flex-start; }
+            .popup-controls { width: 100%; justify-content: space-between; }
             .popup-poster-inline { display: none; }
             .movie-item { min-width: 130px; max-width: 130px; }
             .lang-selector { justify-content: flex-start; }
@@ -1553,7 +1603,7 @@
     </section>
 
     <section class="featured-banner">
-        <h2>Top Phim Đề Cử - Coi đi hay lắm - mà tìm kiếm nha này tui gợi ý thôi </h2>
+        <h2>Top Phim Đề Cử - Coi đi hay lắm - mà tìm kiếm ở trên nha này tui gợi ý thôi </h2>
         <div class="banner-card" id="nominationBanner">
             <img src="" class="banner-img-bg" id="nomImg">
             <div class="banner-overlay"></div>
@@ -2171,11 +2221,26 @@
             const movie = data.movie;
             const episodeServers = data.episodes; 
             const popup = document.getElementById('moviePopup');
-            const defaultLink = episodeServers[0].server_data[0].link_embed;
+            
+            // Lấy thông tin tập đầu tiên để hiển thị mặc định
+            const defaultServer = episodeServers[0];
+            const defaultEpisode = defaultServer.server_data[0];
+            const defaultLink = defaultEpisode.link_embed;
 
             document.getElementById('popupContent').innerHTML = `
-                <span class="close-popup" onclick="closePopup()">&times;</span>
-                <h2 style="font-size:24px; margin-bottom:15px; border-left: 5px solid var(--accent); padding-left: 15px;">${movie.name}</h2>
+                <div class="popup-header-top">
+                    <div class="popup-title-group">
+                        <h2>${movie.name}</h2>
+                        <span id="currentEpDisplay">Đang xem: ${defaultEpisode.name}</span>
+                    </div>
+                    <div class="popup-controls">
+                        <button class="btn-back-home" onclick="closePopup(); window.scrollTo({top:0, behavior:'smooth'});">
+                            <i class="fas fa-home"></i> Trở lại màn hình chính
+                        </button>
+                        <span class="close-popup" style="position:static;" onclick="closePopup()">&times;</span>
+                    </div>
+                </div>
+
                 <div class="player-wrapper">
                     <iframe id="videoIframe" src="${defaultLink}" allowfullscreen allow="autoplay; encrypted-media"></iframe>
                 </div>
@@ -2206,7 +2271,7 @@
                         </div>
                         <div style="font-weight:bold; margin-top:5px; font-size:14px;">Chọn Tập:</div>
                         <div id="epContainer" class="episode-grid">
-                            ${episodeServers[0].server_data.map((ep, idx) => `<button class="ep-btn ${idx === 0 ? 'active' : ''}" onclick="playVideo(this, '${ep.link_embed}')">${ep.name}</button>`).join('')}
+                            ${episodeServers[0].server_data.map((ep, idx) => `<button class="ep-btn ${idx === 0 ? 'active' : ''}" onclick="playVideo(this, '${ep.link_embed}', '${ep.name}')">${ep.name}</button>`).join('')}
                         </div>
                         <p style="color:#aaa; line-height:1.6; margin-top:20px; font-size:13px; border-top:1px solid #333; padding-top:15px;">${movie.content}</p>
                         
@@ -2282,6 +2347,11 @@
                     const iframe = document.getElementById('videoIframe');
                     if (iframe && iframe.src !== sync.link) {
                         iframe.src = sync.link;
+                        
+                        // Cập nhật tập đang xem trên header nếu đồng bộ
+                        const epDisplay = document.getElementById('currentEpDisplay');
+                        if(epDisplay && sync.epName) epDisplay.innerText = `Đang xem: ${sync.epName}`;
+                        
                         alert(sync.user + " vừa chuyển tập phim!");
                     }
                 }
@@ -2319,9 +2389,14 @@
         stream.scrollTop = stream.scrollHeight;
     }
 
-    window.playVideo = function(btn, link) {
+    window.playVideo = function(btn, link, epName) {
         document.querySelectorAll('.ep-btn').forEach(b => b.classList.remove('active'));
         btn.classList.add('active');
+        
+        // Cập nhật text hiển thị tập trên header
+        const epDisplay = document.getElementById('currentEpDisplay');
+        if(epDisplay && epName) epDisplay.innerText = `Đang xem: ${epName}`;
+
         const iframe = document.getElementById('videoIframe');
         if(iframe) {
             iframe.src = "about:blank"; 
@@ -2335,6 +2410,7 @@
             database.ref('active_rooms/' + currentRoomID + '/currentSync').set({
                 link: link,
                 user: currentUser.name,
+                epName: epName || "N/A",
                 timestamp: Date.now()
             });
         }
@@ -2344,11 +2420,11 @@
         document.querySelectorAll('.lang-btn').forEach(b => b.classList.remove('active'));
         btn.classList.add('active');
         const serverData = window.currentMovieEpisodes[serverIdx].server_data;
-        const newEpisodes = serverData.map((ep, idx) => `<button class="ep-btn ${idx === 0 ? 'active' : ''}" onclick="playVideo(this, '${ep.link_embed}')">${ep.name}</button>`).join('');
+        const newEpisodes = serverData.map((ep, idx) => `<button class="ep-btn ${idx === 0 ? 'active' : ''}" onclick="playVideo(this, '${ep.link_embed}', '${ep.name}')">${ep.name}</button>`).join('');
         const epContainer = document.getElementById('epContainer');
         if(epContainer) {
             epContainer.innerHTML = newEpisodes;
-            playVideo(epContainer.querySelector('.ep-btn'), serverData[0].link_embed);
+            playVideo(epContainer.querySelector('.ep-btn'), serverData[0].link_embed, serverData[0].name);
         }
     };
 
