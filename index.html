@@ -1066,13 +1066,14 @@
 
        /* ===== GIAO DIỆN PHÁT VIDEO MỚI ===== */
         /* ===== GIAO DIỆN VIDEO CỐ ĐỊNH - NỘI DUNG CUỘN ===== */
+        /* ===== GIAO DIỆN VIDEO CỐ ĐỊNH - NỘI DUNG CUỘN - CÓ GỢI Ý ===== */
         .popup-overlay {
             position: fixed;
             inset: 0;
             background: rgba(0,0,0,0.98);
             z-index: 5000;
             display: none;
-            overflow: hidden; /* Quan trọng: Ngăn overlay cuộn, để popup-content tự quản lý */
+            overflow: hidden; /* Khóa cuộn lớp nền */
             backdrop-filter: blur(15px);
         }
 
@@ -1080,17 +1081,17 @@
             max-width: 1100px;
             margin: 0 auto;
             background: var(--bg-nav);
-            height: 100vh; /* Full chiều cao màn hình */
+            height: 100vh;
             display: flex;
-            flex-direction: column; /* Chia làm 2 phần: Header+Video và Thông tin */
+            flex-direction: column;
             position: relative;
             box-shadow: 0 0 50px rgba(0,0,0,0.8);
         }
 
-        /* Phần trên: Header + Video (Cố định) */
+        /* Video Header & Frame cố định ở trên */
         .cinema-top-fixed {
             width: 100%;
-            flex-shrink: 0; /* Không cho phần này bị co lại */
+            flex-shrink: 0;
             position: sticky;
             top: 0;
             z-index: 200;
@@ -1099,78 +1100,47 @@
 
         .video-player-header {
             position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
+            top: 0; left: 0; width: 100%;
             padding: 15px 25px;
             background: linear-gradient(to bottom, rgba(0,0,0,0.9) 0%, transparent 100%);
             display: flex;
             justify-content: space-between;
             align-items: center;
             z-index: 210;
-            pointer-events: none;
-        }
-
-        .video-player-header h2, .btn-exit-cinema { pointer-events: auto; }
-
-        .video-player-header h2 {
-            color: #fff;
-            font-size: 18px;
-            border-left: 4px solid var(--accent);
-            padding-left: 15px;
-            text-shadow: 2px 2px 4px #000;
         }
 
         .btn-exit-cinema {
-            background: rgba(255,255,255,0.15);
-            color: #fff;
-            border: 1px solid rgba(255,255,255,0.2);
-            padding: 8px 18px;
-            border-radius: 30px;
-            cursor: pointer;
-            font-weight: bold;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            transition: 0.3s;
+            background: rgba(255,255,255,0.15); color: #fff; border: 1px solid rgba(255,255,255,0.2);
+            padding: 8px 18px; border-radius: 30px; cursor: pointer; font-weight: bold; transition: 0.3s;
         }
-
         .btn-exit-cinema:hover { background: var(--accent); color: #000; }
 
-        .video-frame-container {
-            width: 100%;
-            aspect-ratio: 16/9;
-            background: #000;
-        }
-
+        .video-frame-container { width: 100%; aspect-ratio: 16/9; background: #000; }
         .video-frame-container iframe { width: 100%; height: 100%; border: none; }
 
-        /* Phần dưới: Thông tin phim (Cho phép cuộn) */
+        /* Vùng cuộn thông tin ở dưới */
         .detail-scrollable-body {
             flex: 1;
-            overflow-y: auto; /* Kích hoạt cuộn nội dung bên dưới */
+            overflow-y: auto;
             padding: 30px;
             background: var(--bg-nav);
-            scrollbar-width: thin;
-            scrollbar-color: var(--accent) #252931;
         }
 
         .detail-scrollable-body::-webkit-scrollbar { width: 6px; }
         .detail-scrollable-body::-webkit-scrollbar-thumb { background: var(--accent); border-radius: 10px; }
 
-        .detail-info-grid {
-            display: flex;
-            gap: 30px;
-            margin-bottom: 30px;
-        }
-
-        .detail-poster-fixed { flex: 0 0 180px; }
-        .detail-poster-fixed img { width: 100%; border-radius: 12px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
+        /* Style cho mục gợi ý bom tấn trong popup */
+        .related-bomtan-section { margin-top: 40px; border-top: 1px solid #333; padding-top: 20px; }
+        .related-bomtan-section h4 { color: var(--accent); margin-bottom: 15px; }
+        .popup-related-scroll { display: flex; overflow-x: auto; gap: 15px; padding-bottom: 10px; }
+        .related-item-mini { min-width: 120px; max-width: 120px; cursor: pointer; transition: 0.3s; }
+        .related-item-mini:hover { transform: translateY(-5px); }
+        .related-item-mini img { width: 100%; aspect-ratio: 2/3; border-radius: 8px; object-fit: cover; }
+        .related-item-mini span { font-size: 11px; display: block; margin-top: 5px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; color: #eee; }
 
         @media (max-width: 768px) {
-            .detail-info-grid { flex-direction: column; }
             .detail-poster-fixed { display: none; }
-            .video-player-header h2 { font-size: 14px; max-width: 60%; }
+            .video-player-header h2 { font-size: 14px; }
         }
 
         .close-popup:hover {
@@ -3006,23 +2976,28 @@
     // --- CHI TIẾT PHIM - GIAO DIỆN MỚI (NHƯ ẢNH) ---
     async function showMovieDetail(slug) {
         try {
+            // Tải thông tin phim hiện tại
             const res = await fetch(API_DETAIL + slug);
             const data = await res.json();
             const movie = data.movie;
             const episodeServers = data.episodes;
-            const popup = document.getElementById('moviePopup');
             
+            // Tải thêm danh sách bom tấn gợi ý (Lấy phim lẻ mới nhất)
+            const resBomTan = await fetch(`https://phimapi.com/v1/api/danh-sach/phim-le?limit=10`);
+            const dataBomTan = await resBomTan.json();
+            const bomTanItems = dataBomTan.data.items;
+
+            const popup = document.getElementById('moviePopup');
             const firstEp = episodeServers[0].server_data[0].link_embed;
             const imdb = movie.tmdb?.vote_average || '8.0';
-            const description = movie.content ? movie.content.replace(/<[^>]*>/g, '') : 'Nội dung đang cập nhật.';
 
             let html = `
             <div class="popup-content">
                 <div class="cinema-top-fixed">
                     <div class="video-player-header">
-                        <h2>${movie.name}</h2>
+                        <h2 style="color:white; text-shadow: 2px 2px 4px #000;">${movie.name}</h2>
                         <button class="btn-exit-cinema" onclick="closePopup()">
-                            <i class="fas fa-arrow-left"></i> Trở về
+                            <i class="fas fa-times"></i> Đóng
                         </button>
                     </div>
                     <div class="video-frame-container">
@@ -3030,73 +3005,72 @@
                     </div>
                 </div>
 
-                <div class="detail-scrollable-body">
-                    <div class="detail-info-grid">
-                        <div class="detail-poster-fixed">
-                            <img src="${API_IMG}${movie.poster_url}" alt="${movie.name}">
+                <div class="detail-scrollable-body" id="popupScrollBody">
+                    <div style="display:flex; gap:25px; margin-bottom:25px;">
+                        <div style="flex:0 0 150px;" class="detail-poster-fixed">
+                            <img src="${API_IMG}${movie.poster_url}" style="width:100%; border-radius:10px;">
                         </div>
-                        <div class="detail-text-area">
-                            <div class="detail-title-big" style="font-size: 28px; font-weight:800; color:white;">${movie.name}</div>
-                            <div style="color: #aaa; font-style: italic; margin-bottom: 15px;">${movie.origin_name}</div>
-                            <div class="detail-meta">
-                                <span class="imdb-badge-detail">IMDb ${imdb}</span>
-                                <span class="age-rating-detail">${movie.quality}</span>
-                                <span><i class="far fa-calendar-alt"></i> ${movie.year}</span>
-                                <span><i class="far fa-clock"></i> ${movie.time || '120 phút'}</span>
-                            </div>
-                            
-                            <div class="detail-actions" style="margin-top:20px;">
-                                <button class="btn-detail btn-play"><i class="fas fa-plus"></i> Danh sách</button>
-                                <button class="btn-detail btn-secondary" onclick="initWatchParty('${movie.name}', '${movie.slug}')">
-                                    <i class="fas fa-users"></i> Xem chung
-                                </button>
-                                <button class="btn-detail btn-secondary"><i class="fas fa-share-alt"></i> Chia sẻ</button>
+                        <div style="flex:1;">
+                            <h1 style="font-size:24px; color:white;">${movie.name}</h1>
+                            <p style="color:var(--accent); margin-bottom:10px;">${movie.origin_name} (${movie.year})</p>
+                            <div style="display:flex; gap:10px; font-size:12px;">
+                                <span style="background:var(--accent); color:black; padding:2px 8px; border-radius:4px; font-weight:bold;">IMDb ${imdb}</span>
+                                <span style="border:1px solid #666; padding:2px 8px; border-radius:4px;">${movie.quality}</span>
+                                <span style="border:1px solid #666; padding:2px 8px; border-radius:4px;">${movie.time}</span>
                             </div>
                         </div>
                     </div>
 
-                    <p style="color:#bbb; line-height:1.7; margin-bottom:30px;">${description}</p>
+                    <p style="color:#aaa; line-height:1.6; font-size:14px; margin-bottom:30px;">${movie.content.replace(/<[^>]*>/g, '')}</p>
 
-                    <div class="detail-tabs">
-                        <div class="tab-item active" onclick="switchTab(this, 'episodes')">Tập phim</div>
-                        <div class="tab-item" onclick="switchTab(this, 'cast')">Diễn viên</div>
+                    <div class="detail-tabs" style="display:flex; gap:20px; border-bottom:1px solid #333; margin-bottom:20px;">
+                        <div class="tab-item active" style="padding-bottom:10px; cursor:pointer;" onclick="switchTab(this, 'episodes')">Chọn tập</div>
+                        <div class="tab-item" style="padding-bottom:10px; cursor:pointer;" onclick="switchTab(this, 'cast')">Diễn viên</div>
                     </div>
 
                     <div id="tab-episodes" class="tab-content active">
-                        <div class="server-selector">
-                            <div class="server-buttons">
-                                ${episodeServers.map((s, idx) => `<button class="server-btn ${idx===0?'active':''}" onclick="switchServer(${idx}, this)">${s.server_name}</button>`).join('')}
-                            </div>
-                        </div>
-                        <div class="episode-grid" id="episodeContainer">
-                            ${episodeServers[0].server_data.map((ep, idx) => `<button class="ep-btn ${idx===0?'active':''}" onclick="playVideo(this, '${ep.link_embed}')">${ep.name}</button>`).join('')}
+                        <div class="episode-grid">
+                            ${episodeServers[0].server_data.map((ep, idx) => `
+                                <button class="ep-btn ${idx===0?'active':''}" onclick="playVideo(this, '${ep.link_embed}')">${ep.name}</button>
+                            `).join('')}
                         </div>
                     </div>
 
                     <div id="tab-cast" class="tab-content">
-                        <div class="cast-list">
-                            ${movie.actor.map(a => `<div class="cast-item"><div class="cast-avatar"><i class="fas fa-user"></i></div><span class="cast-name">${a}</span></div>`).join('')}
+                        <div class="cast-list">${movie.actor.map(a => `<div class="cast-item"><div class="cast-avatar"><i class="fas fa-user"></i></div><span class="cast-name" style="font-size:12px;">${a}</span></div>`).join('')}</div>
+                    </div>
+
+                    <div class="related-bomtan-section">
+                        <h4><i class="fas fa-fire"></i> Có thể bạn muốn xem</h4>
+                        <div class="popup-related-scroll">
+                            ${bomTanItems.map(m => `
+                                <div class="related-item-mini" onclick="showMovieDetail('${m.slug}')">
+                                    <img src="${API_IMG}https://phimimg.com/${m.poster_url}">
+                                    <span>${m.name}</span>
+                                </div>
+                            `).join('')}
                         </div>
                     </div>
 
-                    <div id="watchPartyArea"></div>
+                    <div id="watchPartyArea" style="margin-top:30px;"></div>
                 </div>
-            </div>
-            `;
+            </div>`;
 
             popup.innerHTML = html;
             popup.style.display = 'block';
-            document.body.style.overflow = 'hidden'; // Khóa cuộn trang chủ
+            document.body.style.overflow = 'hidden';
             window.currentMovieEpisodes = episodeServers;
 
         } catch (e) { alert("Lỗi tải phim!"); }
     }
 
-    // Chỉnh lại hàm playVideo để không cuộn trang (vì video đã cố định rồi)
+    // Sửa lại hàm playVideo này luôn
     window.playVideo = function(btn, link) {
         document.querySelectorAll('.ep-btn').forEach(b => b.classList.remove('active'));
         btn.classList.add('active');
         document.getElementById('videoIframe').src = link;
+        // Cuộn vùng thông tin lên đầu khi đổi tập cho mượt
+        document.getElementById('popupScrollBody').scrollTo({ top: 0, behavior: 'smooth' });
     };
 
     // Nhớ cập nhật hàm playVideo này luôn cho đồng bộ
